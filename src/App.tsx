@@ -10,6 +10,7 @@ import { DashboardHome } from './components/dashboard/DashboardHome';
 import { ProductsPage } from './components/pages/ProductsPage';
 import { CampaignsPage } from './components/pages/CampaignsPage';
 import { SettingsPage } from './components/pages/SettingsPage';
+import VoiceAgent from './components/VoiceAgent';
 
 const AppContent: React.FC = () => {
   const { user } = useAuth();
