@@ -109,7 +109,7 @@ export const useRetellWebCall = ({
 
   const createWebCall = async (agentId: string): Promise<string> => {
     try {
-      const response = await fetch('https://api.retellai.com/create-web-call', {
+      const response = await fetch('https://api.retellai.com/v2/create-web-call', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_RETELL_API_KEY}`,
@@ -119,20 +119,23 @@ export const useRetellWebCall = ({
           agent_id: agentId,
           metadata: {
             session_type: 'business_consultation',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            user_id: 'web_user_' + Date.now()
           }
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create web call: ${response.statusText}`);
+        const errorData = await response.text();
+        console.error('API Response:', errorData);
+        throw new Error(`Failed to create web call: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
       return data.access_token;
     } catch (error) {
       console.error('Error creating web call:', error);
-      throw new Error('Failed to initialize voice call. Please try again.');
+      throw new Error('Failed to initialize voice call. Please check your API key and agent ID.');
     }
   };
 
