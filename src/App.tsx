@@ -17,34 +17,46 @@ const AppContent: React.FC = () => {
 
   if (!user) {
     return (
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+        {/* Voice Agent available on all pages */}
+        <VoiceAgent agentId={import.meta.env.VITE_RETELL_AGENT_ID} />
+      </>
     );
   }
 
   if (!user.onboardingComplete) {
     return (
-      <Routes>
-        <Route path="/onboarding" element={<OnboardingFlow />} />
-        <Route path="*" element={<Navigate to="/onboarding" />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path="/onboarding" element={<OnboardingFlow />} />
+          <Route path="*" element={<Navigate to="/onboarding" />} />
+        </Routes>
+        {/* Voice Agent available during onboarding */}
+        <VoiceAgent agentId={import.meta.env.VITE_RETELL_AGENT_ID} />
+      </>
     );
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<DashboardLayout />}>
-        <Route index element={<Navigate to="/dashboard" />} />
-        <Route path="dashboard" element={<DashboardHome />} />
-        <Route path="products" element={<ProductsPage />} />
-        <Route path="campaigns" element={<CampaignsPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/dashboard" />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route index element={<Navigate to="/dashboard" />} />
+          <Route path="dashboard" element={<DashboardHome />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="campaigns" element={<CampaignsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+      </Routes>
+      {/* Voice Agent available across all authenticated pages */}
+      <VoiceAgent agentId={import.meta.env.VITE_RETELL_AGENT_ID} />
+    </>
   );
 };
 
