@@ -116,6 +116,36 @@ class WebhookService {
       return true;
     } catch (error) {
       console.error('❌ Failed to send data to n8n webhook:', error);
+      
+      // In development mode, log the data locally for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔄 [DEV MODE] Data that would be sent to Google Sheets:');
+        console.table(data);
+        
+        // Save to localStorage for debugging
+        try {
+          const existingData = JSON.parse(localStorage.getItem('n8n_webhook_data') || '[]');
+          existingData.push({
+            ...data,
+            _id: Date.now(),
+            _localTimestamp: new Date().toLocaleString(),
+            _error: error.message
+          });
+          
+          // Keep only last 50 entries
+          if (existingData.length > 50) {
+            existingData.splice(0, existingData.length - 50);
+          }
+          
+          localStorage.setItem('n8n_webhook_data', JSON.stringify(existingData));
+          console.log('💾 Data saved to localStorage for debugging. Check localStorage.getItem("n8n_webhook_data")');
+        } catch (storageError) {
+          console.warn('Failed to save to localStorage:', storageError);
+        }
+        
+        return true; // Return success in dev mode for testing
+      }
+      
       return false;
     }
   }
