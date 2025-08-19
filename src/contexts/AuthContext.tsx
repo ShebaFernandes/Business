@@ -117,12 +117,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(prev => prev ? { ...prev, ...userData } : null);
   };
 
-  const completeOnboarding = (businessData: { businessName: string; industry: string; businessSize: string }) => {
-    setUser(prev => prev ? {
-      ...prev,
+  const completeOnboarding = async (businessData: { businessName: string; industry: string; businessSize: string }) => {
+    const updatedUser = user ? {
+      ...user,
       ...businessData,
       onboardingComplete: true
-    } : null);
+    } : null;
+    
+    setUser(updatedUser);
+    
+    // Send onboarding completion data to n8n/Google Sheets
+    if (updatedUser) {
+      try {
+        await webhookService.sendOnboardingData({
+          userId: updatedUser.id,
+          userName: updatedUser.name,
+          userEmail: updatedUser.email,
+          businessName: businessData.businessName,
+          industry: businessData.industry,
+          businessSize: businessData.businessSize,
+          onboardingCompletedAt: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Failed to send onboarding data to webhook:', error);
+      }
+    }
   };
 
   const value: AuthContextType = {
