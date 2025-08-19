@@ -11,9 +11,11 @@ interface VoiceAgentProps {
 }
 
 const VoiceAgent: React.FC<VoiceAgentProps> = ({ agentId }) => {
+  const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
   const [showTranscript, setShowTranscript] = useState(false);
+  const [callStartTime, setCallStartTime] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const {
