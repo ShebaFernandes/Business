@@ -79,12 +79,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Mock successful signup
     if (name && email && password) {
-      setUser({
-        id: '1',
+      const userData = {
+        id: Date.now().toString(),
         name: name,
         email: email,
         onboardingComplete: false
-      });
+      };
+      
+      setUser(userData);
+      
+      // Send signup data to n8n/Google Sheets
+      try {
+        await webhookService.sendUserRegistrationData({
+          userId: userData.id,
+          userName: userData.name,
+          userEmail: userData.email,
+          registrationMethod: 'signup',
+          metadata: {
+            userAgent: navigator.userAgent,
+            referrer: document.referrer
+          }
+        });
+      } catch (error) {
+        console.error('Failed to send signup data to webhook:', error);
+      }
+      
       return true;
     }
     return false;
