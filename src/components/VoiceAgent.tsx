@@ -3,6 +3,8 @@ import { Mic, MicOff, Phone, PhoneOff, MessageCircle, X, Minimize2, Maximize2 } 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRetellWebCall } from '../hooks/useRetellWebCall';
 import { TranscriptEntry } from '../types/retell';
+import { useAuth } from '../contexts/AuthContext';
+import webhookService from '../services/webhookService';
 
 interface VoiceAgentProps {
   agentId: string;
