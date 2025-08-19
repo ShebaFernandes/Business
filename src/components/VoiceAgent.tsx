@@ -28,13 +28,57 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ agentId }) => {
     agentId,
     onCallStart: () => {
       console.log('Voice call started');
+      setCallStartTime(Date.now());
       setShowTranscript(true);
     },
-    onCallEnd: () => {
+    onCallEnd: async () => {
       console.log('Voice call ended');
+      
+      // Send call data to n8n/Google Sheets
+      if (callStartTime && transcript.length > 0) {
+        const callDuration = ((Date.now() - callStartTime) / 1000 / 60).toFixed(2) + ' minutes';
+        
+        try {
+          await webhookService.sendVoiceCallData({
+            userId: user?.id,
+            userName: user?.name,
+            userEmail: user?.email,
+            callDuration,
+            transcript,
+            callStatus: 'completed',
+            metadata: {
+              agentId,
+              sessionId: `session_${Date.now()}`
+            }
+          });
+        } catch (error) {
+          console.error('Failed to send voice call data to webhook:', error);
+        }
+      }
+      
+      setCallStartTime(null);
     },
     onError: (error) => {
       console.error('Voice call error:', error);
+      
+      // Send error data to n8n/Google Sheets
+      if (callStartTime) {
+        const callDuration = ((Date.now() - callStartTime) / 1000 / 60).toFixed(2) + ' minutes';
+        
+        webhookService.sendVoiceCallData({
+          userId: user?.id,
+          userName: user?.name,
+          userEmail: user?.email,
+          callDuration,
+          transcript,
+          callStatus: 'error',
+          metadata: {
+            agentId,
+            sessionId: `session_${Date.now()}`,
+            error: error
+          }
+        }).catch(err => console.error('Failed to send error data to webhook:', err));
+      }
     }
   });
 
