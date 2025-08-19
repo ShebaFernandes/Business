@@ -52,12 +52,12 @@ export const OnboardingFlow: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateStep(currentStep)) {
       if (currentStep < 3) {
         setCurrentStep(prev => prev + 1);
       } else {
-        completeOnboarding(formData);
+        await completeOnboarding(formData);
       }
     }
   };
