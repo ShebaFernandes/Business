@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 class VoiceAgentTester:
-    def __init__(self, frontend_url="http://localhost:3001"):
+    def __init__(self, frontend_url="http://localhost:3002"):
         self.frontend_url = frontend_url
         self.tests_run = 0
         self.tests_passed = 0
